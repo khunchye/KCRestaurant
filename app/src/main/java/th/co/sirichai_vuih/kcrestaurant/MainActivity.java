@@ -1,5 +1,6 @@
 package th.co.sirichai_vuih.kcrestaurant;
 
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
@@ -7,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -62,10 +64,49 @@ public class MainActivity extends AppCompatActivity {
 
         } else {
             //No Space
+            checkUser();
+
 
         } //if
 
     }//clickLogin
+
+    private void checkUser() {
+
+        try {
+
+            String[] myResultStrings = myManage.searchUser(userString);
+            Log.d("banja", "Name = " + myResultStrings[3]);
+
+            //Check password
+            if (passwordString.equals(myResultStrings[2])) {
+                welcome(myResultStrings[3]);
+            }else {
+                MyAlertDialog myAlertDialog = new MyAlertDialog();
+                myAlertDialog.myDialog(MainActivity.this,
+                        "Password False",
+                        "Please Try Again Password False");
+
+            }
+
+        } catch (Exception e) {
+            MyAlertDialog myAlertDialog = new MyAlertDialog();
+            myAlertDialog.myDialog(MainActivity.this,"ไม่มี User",
+                    "ไม่มี" + userString + "ในฐานข้อมูลของเรา");
+        }
+
+    }// check user
+
+    private void welcome(String myResultString) {
+
+        Toast.makeText(MainActivity.this, "ยินดีต้อนรับ " + myResultString, Toast.LENGTH_SHORT).show();
+
+        Intent intent = new Intent(MainActivity.this, ShowMenuFood.class);
+        intent.putExtra("Officer", myResultString);
+        startActivity(intent);
+
+
+    }
 
     private void bindWidget() {
         userEditText = (EditText) findViewById(R.id.editText);
